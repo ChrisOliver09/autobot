@@ -1,10 +1,10 @@
-var util = require('util');
+/*var util = require('util');
 var winston = require('winston');
 var wolfram_node = require('wolfram');
-var AuthDetails = require("./auth.json");
+var AuthDetails = require("./auth.json");*/
 
 
-function WolframPlugin () {
+/*function WolframPlugin () {
 	this.wolfram = wolfram_node.createClient(AuthDetails.wolfram_api_key)
 };
 
@@ -32,4 +32,4 @@ WolframPlugin.prototype.respond = function (query, channel, bot) {
 };
 
 
-module.exports = WolframPlugin;
+module.exports = WolframPlugin;*/
