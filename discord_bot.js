@@ -326,7 +326,7 @@ var commands = {
             }
             rssfeed(bot,msg,"https://www.reddit.com"+path,1,false);
         }
-    }
+    },
     "bees": {
         usage: "[Bees!]",
         description: "Gives everyone bees to enjoy",
