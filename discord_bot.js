@@ -328,7 +328,6 @@ var commands = {
         }
     },
     "bees": {
-        usage: "[Bees!]",
         description: "Gives everyone bees to enjoy",
         process: function(bot,msg,suffix) {
             bot.sendMessage(msg.channel,"https://i.imgur.com/0RRdP.jpg");
