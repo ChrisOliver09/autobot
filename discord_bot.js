@@ -25,6 +25,8 @@ var config = {
     "permission": ["NORMAL"]
 };
 
+var botKeywords = ["bees"];
+
 
 //https://api.imgflip.com/popular_meme_ids
 var meme = {
@@ -385,6 +387,26 @@ function rssfeed(bot,msg,url,count,full){
     });
 }
 
+function messageHasKeywords(message) {
+    for (var i = 0; i < botKeywords.length; i++) {
+        var keyword = botKeywords[i]
+        if (message.toString().indexOf(keyword) > -1) {
+            return true
+        };
+    }
+    return false
+}
+
+function getKeywordsFromMessage(message) {
+    var botKeyWord
+    for (var i = 0; i < botKeywords.length; i++) {
+        var keyword = botKeywords[i]
+        if (message.toString().indexOf(keyword) > -1) {
+            botKeyWord = keyword
+        };
+    }
+    return botKeyWord
+}
 
 var bot = new Discord.Client();
 
@@ -402,14 +424,22 @@ bot.on("disconnected", function () {
 
 bot.on("message", function (msg) {
 	//check if message is a command
-	if(msg.author.id != bot.user.id && (msg.content[0] === '!' || msg.content.indexOf(bot.user.mention()) == 0)){
+	if(msg.author.id != bot.user.id && (msg.content[0] === '!' || msg.content.indexOf(bot.user.mention()) == 0) || messageHasKeywords(msg.content.toLowerCase())){
         console.log("treating " + msg.content + " from " + msg.author + " as command");
-		var cmdTxt = msg.content.split(" ")[0].substring(1);
-        var suffix = msg.content.substring(cmdTxt.length+2);//add one for the ! and one for the space
-        if(msg.content.indexOf(bot.user.mention()) == 0){
-            cmdTxt = msg.content.split(" ")[1];
-            suffix = msg.content.substring(bot.user.mention().length+cmdTxt.length+2);
+        var cmdTxt;
+        var suffix;
+        if (messageHasKeywords(msg.content.toLowerCase())) {
+            var keyword = getKeywordsFromMessage(msg.content.toLowerCase())
+            cmdTxt = keyword;
+        } else {
+            cmdTxt = msg.content.split(" ")[0].substring(1);
+            suffix = msg.content.substring(cmdTxt.length+2);//add one for the ! and one for the space
+            if(msg.content.indexOf(bot.user.mention()) == 0){
+                cmdTxt = msg.content.split(" ")[1];
+                suffix = msg.content.substring(bot.user.mention().length+cmdTxt.length+2);
+            }
         }
+
 		var cmd = commands[cmdTxt];
         if(cmdTxt === "help"){
             //help is special since it iterates over the other commands
