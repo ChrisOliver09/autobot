@@ -69,7 +69,8 @@ var commands = {
 			    bot.sendMessage(msg.channel, "Invalid tags, try something different. [Tags: " + (tags ? tags : "Random GIF") + "]");
 			}
 		    });
-		}
+		},
+        shouldBeInHelp: true
 	},
     "ping": {
         description: "responds pong, useful for checking if bot is alive",
@@ -78,7 +79,8 @@ var commands = {
             if(suffix){
                 bot.sendMessage(msg.channel, "note that !ping takes no arguments!");
             }
-        }
+        },
+        shouldBeInHelp: true
     },
     "game": {
         usage: "<name of game>",
@@ -90,44 +92,53 @@ var commands = {
             }
             bot.sendMessage(msg.channel, "@everyone Anyone up for " + game + "?");
             console.log("sent game invites for " + game);
-        }
+        },
+        shouldBeInHelp: true
     },
     "servers": {
         description: "lists servers bot is connected to",
-        process: function(bot,msg){bot.sendMessage(msg.channel,bot.servers);}
+        process: function(bot,msg){bot.sendMessage(msg.channel,bot.servers);},
+        shouldBeInHelp: true
     },
     "channels": {
         description: "lists channels bot is connected to",
-        process: function(bot,msg) { bot.sendMessage(msg.channel,bot.channels);}
+        process: function(bot,msg) { bot.sendMessage(msg.channel,bot.channels);},
+        shouldBeInHelp: true
     },
     "myid": {
         description: "returns the user id of the sender",
-        process: function(bot,msg){bot.sendMessage(msg.channel,msg.author.id);}
+        process: function(bot,msg){bot.sendMessage(msg.channel,msg.author.id);},
+        shouldBeInHelp: true
     },
     "idle": {
         description: "sets bot status to idle",
-        process: function(bot,msg){ bot.setStatusIdle();}
+        process: function(bot,msg){ bot.setStatusIdle();},
+        shouldBeInHelp: true
     },
     "online": {
         description: "sets bot status to online",
-        process: function(bot,msg){ bot.setStatusOnline();}
+        process: function(bot,msg){ bot.setStatusOnline();},
+        shouldBeInHelp: true
     },
     "youtube": {
         usage: "<video tags>",
         description: "gets youtube video matching tags",
         process: function(bot,msg,suffix){
             youtube_plugin.respond(suffix,msg.channel,bot);
-        }
+        },
+        shouldBeInHelp: true
     },
     "say": {
         usage: "<message>",
         description: "bot says message",
-        process: function(bot,msg,suffix){ bot.sendMessage(msg.channel,suffix,true);}
+        process: function(bot,msg,suffix){ bot.sendMessage(msg.channel,suffix,true);},
+        shouldBeInHelp: true
     },
     "image": {
         usage: "<image tags>",
         description: "gets image matching tags from google",
-        process: function(bot,msg,suffix){ google_image_plugin.respond(suffix,msg.channel,bot);}
+        process: function(bot,msg,suffix){ google_image_plugin.respond(suffix,msg.channel,bot);},
+        shouldBeInHelp: true
     },
     "pullanddeploy": {
         description: "bot will perform a git pull master and restart with the new code",
@@ -164,7 +175,8 @@ var commands = {
                     });
                 });
             });
-        }
+        },
+        shouldBeInHelp: false
     },
     "meme": {
         usage: 'meme "top text" "bottom text"',
@@ -178,7 +190,8 @@ var commands = {
                 //console.log(arguments);
                 bot.sendMessage(msg.channel,image);
             });
-        }
+        },
+        shouldBeInHelp: true
     },
     "memehelp": { //TODO: this should be handled by !help
         description: "returns available memes for !meme",
@@ -188,7 +201,8 @@ var commands = {
                 str += m + "\n"
             }
             bot.sendMessage(msg.channel,str);
-        }
+        },
+        shouldBeInHelp: true
     },
     "version": {
         description: "returns the git commit this bot is running",
@@ -202,12 +216,14 @@ var commands = {
                     bot.sendMessage(msg.channel,"failed checking git version!");
                 }
             });
-        }
+        },
+        shouldBeInHelp: true
     },
     "log": {
         usage: "<log message>",
         description: "logs message to bot console",
-        process: function(bot,msg,suffix){console.log(msg.content);}
+        process: function(bot,msg,suffix){console.log(msg.content);},
+        shouldBeInHelp: true
     },
     "wiki": {
         usage: "<search terms>",
@@ -235,7 +251,8 @@ var commands = {
             },function(err){
                 bot.sendMessage(msg.channel,err);
             });
-        }
+        },
+        shouldBeInHelp: true
     },
     "join-server": {
         usage: "<invite>",
@@ -250,7 +267,8 @@ var commands = {
                     bot.sendMessage(msg.channel,"Successfully joined " + server);
                 }
             }));
-        }
+        },
+        shouldBeInHelp: true
     },
     "create": {
         usage: "<text|voice> <channel name>",
@@ -269,7 +287,8 @@ var commands = {
                     bot.sendMessage(msg.channel,"created " + channel);
                 }
             });
-        }
+        },
+        shouldBeInHelp: false
     },
     "delete": {
         usage: "<channel name>",
@@ -287,7 +306,9 @@ var commands = {
                     console.log("deleted " + suffix + " at " + msg.author + "'s request");
                 }
             });
-        }
+        },
+        shouldBeInHelp: false
+
     },
     "stock": {
         usage: "<stock to fetch>",
@@ -305,7 +326,9 @@ var commands = {
                         + "\nprice: $" + snapshot.lastTradePriceOnly);
                 }  
             });
-        }
+        },
+        shouldBeInHelp: true
+
     },
     "rss": {
         description: "lists available rss feeds",
@@ -319,7 +342,8 @@ var commands = {
                     bot.sendMessage(msg.channel,c + ": " + rssFeeds[c].url);
                 }
             });
-        }
+        },
+        shouldBeInHelp: false
     },
     "reddit": {
         usage: "[subreddit]",
@@ -330,13 +354,15 @@ var commands = {
                 path = "/r/"+suffix+path;
             }
             rssfeed(bot,msg,"https://www.reddit.com"+path,1,false);
-        }
+        },
+        shouldBeInHelp: true
     },
     "bees": {
         description: "Gives everyone bees to enjoy",
         process: function(bot,msg,suffix) {
             bot.sendMessage(msg.channel,"https://i.imgur.com/0RRdP.jpg");
-        }
+        },
+        shouldBeInHelp: false
     }
 };
 
@@ -448,16 +474,21 @@ bot.on("message", function (msg) {
         if(cmdTxt === "help"){
             //help is special since it iterates over the other commands
             for(var cmd in commands) {
-                var info = "!" + cmd;
-                var usage = commands[cmd].usage;
-                if(usage){
-                    info += " " + usage;
+                var shouldBeInHelp = commands[cmd].shouldBeInHelp;
+                console.log(shouldBeInHelp)
+                if (shouldBeInHelp) {
+                    console.log("hey")
+                    var info = "!" + cmd;
+                    var usage = commands[cmd].usage;
+                    if(usage){
+                        info += " " + usage;
+                    }
+                    var description = commands[cmd].description;
+                    if(description){
+                        info += "\n\t" + description;
+                    }
+                    bot.sendMessage(msg.channel,info);
                 }
-                var description = commands[cmd].description;
-                if(description){
-                    info += "\n\t" + description;
-                }
-                bot.sendMessage(msg.channel,info);
             }
         }
 		else if(cmd) {
