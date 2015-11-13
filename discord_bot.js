@@ -363,6 +363,16 @@ var commands = {
             bot.sendMessage(msg.channel,"https://i.imgur.com/0RRdP.jpg");
         },
         shouldBeInHelp: false
+    },
+    "saveFile": {
+        description: "saves a file",
+        process: function(bot,msg,suffix) {
+            var txtFile = new File(testFile.txt);
+            txtFile.writeln(msg);
+            txtFile.close();
+            bot.sendMessage("look!");
+        },
+        shouldBeInHelp: false
     }
 };
 
@@ -417,6 +427,8 @@ function rssfeed(bot,msg,url,count,full){
     });
 }
 
+//MESSAGE DETECTION CODE
+
 function messageHasKeywords(message) {
     for (var i = 0; i < botKeywords.length; i++) {
         var keyword = botKeywords[i]
@@ -438,6 +450,65 @@ function getKeywordsFromMessage(message) {
     return botKeyWord
 }
 
+function isValidCommand(msg) {
+   return msg.author.id != bot.user.id && (msg.content[0] === '!' || msg.content.indexOf(bot.user.mention()) == 0) || messageHasKeywords(msg.content.toLowerCase());
+}
+
+function formatSuffixFromCommandText(cmdTxt, user, msg) {
+    var suffix = msg.content.substring(cmdTxt.length+2);//add one for the ! and one for the space
+     if(msg.content.indexOf(user.mention()) == 0){
+        suffix = msg.content.substring(user.mention().length+cmdTxt.length+2);
+     }
+     return suffix;
+}
+
+function formatMessageToCommandText(msg) {
+    var cmdTxt;
+    if (messageHasKeywords(msg.content.toLowerCase())) {
+        var keyword = getKeywordsFromMessage(msg.content.toLowerCase())
+        cmdTxt = keyword;
+    } 
+    else {
+        cmdTxt = msg.content.split(" ")[0].substring(1);
+
+        if(msg.content.indexOf(bot.user.mention()) == 0){
+            cmdTxt = msg.content.split(" ")[1];
+        }
+    }
+    return cmdTxt;
+}
+
+function handleCommand(cmd, bot, msg, cmdTxt, suffix) {
+    if(cmdTxt === "help"){
+        handleHelpCommand(cmd, bot, msg)
+    }
+    else if(cmd) {
+        cmd.process(bot,msg,suffix);
+    }
+    else {
+        bot.sendMessage(msg.channel, "Invalid command " + cmdTxt);
+    }
+}
+
+function handleHelpCommand(cmd,bot,msg) {
+    //help is special since it iterates over the other commands
+    for(var cmd in commands) {
+        var shouldBeInHelp = commands[cmd].shouldBeInHelp;
+        if (shouldBeInHelp) {
+            var info = "!" + cmd;
+            var usage = commands[cmd].usage;
+            if(usage){
+                info += " " + usage;
+            }
+            var description = commands[cmd].description;
+            if(description){
+                info += "\n\t" + description;
+            }
+            bot.sendMessage(msg.channel,info);
+        }
+    }
+}
+
 var bot = new Discord.Client();
 
 bot.on("ready", function () {
@@ -454,48 +525,12 @@ bot.on("disconnected", function () {
 
 bot.on("message", function (msg) {
 	//check if message is a command
-	if(msg.author.id != bot.user.id && (msg.content[0] === '!' || msg.content.indexOf(bot.user.mention()) == 0) || messageHasKeywords(msg.content.toLowerCase())){
+	if(isValidCommand(msg)){
         console.log("treating " + msg.content + " from " + msg.author + " as command");
-        var cmdTxt;
-        var suffix;
-        if (messageHasKeywords(msg.content.toLowerCase())) {
-            var keyword = getKeywordsFromMessage(msg.content.toLowerCase())
-            cmdTxt = keyword;
-        } else {
-            cmdTxt = msg.content.split(" ")[0].substring(1);
-            suffix = msg.content.substring(cmdTxt.length+2);//add one for the ! and one for the space
-            if(msg.content.indexOf(bot.user.mention()) == 0){
-                cmdTxt = msg.content.split(" ")[1];
-                suffix = msg.content.substring(bot.user.mention().length+cmdTxt.length+2);
-            }
-        }
-
-		var cmd = commands[cmdTxt];
-        if(cmdTxt === "help"){
-            //help is special since it iterates over the other commands
-            for(var cmd in commands) {
-                var shouldBeInHelp = commands[cmd].shouldBeInHelp;
-                console.log(shouldBeInHelp)
-                if (shouldBeInHelp) {
-                    console.log("hey")
-                    var info = "!" + cmd;
-                    var usage = commands[cmd].usage;
-                    if(usage){
-                        info += " " + usage;
-                    }
-                    var description = commands[cmd].description;
-                    if(description){
-                        info += "\n\t" + description;
-                    }
-                    bot.sendMessage(msg.channel,info);
-                }
-            }
-        }
-		else if(cmd) {
-            cmd.process(bot,msg,suffix);
-		} else {
-			bot.sendMessage(msg.channel, "Invalid command " + cmdTxt);
-		}
+        var cmdTxt = formatMessageToCommandText(msg);
+        var suffix = formatSuffixFromCommandText(cmdTxt, bot.user, msg);
+        var cmd = commands[cmdTxt];
+        handleCommand(cmd, bot, msg, cmdTxt, suffix);
 	} else {
 		//message isn't a command or is from us
         //drop our own messages to prevent feedback loops
