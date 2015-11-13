@@ -41,7 +41,10 @@ var meme = {
 	"drevil": 40945639,
 	"skeptical": 101711,
 	"notime": 442575,
-	"yodawg": 101716
+	"yodawg": 101716,
+    "aliens" : 101470,
+    "morpheus" : 100947,
+    "squidward" : 101511
 };
 
 var game_abbreviations = {
@@ -336,6 +339,7 @@ var commands = {
         }
     }
 };
+
 try{
 var rssFeeds = require("./rss.json");
 function loadFeeds(){
